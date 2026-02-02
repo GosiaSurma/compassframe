@@ -10,6 +10,12 @@
       "dist/server/**/*.js"
     ]
   },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@swc/core",
+      "esbuild"
+    ]
+  },
   "scripts": {
     "dev": "vite",
     "build": "npm run build:client && npm run build:server",
