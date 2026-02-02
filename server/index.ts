@@ -1,9 +1,9 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import { handleDemo } from "./routes/demo";
-import { handleEarlyAccess } from "./routes/early-access";
-import { initializeDatabase } from "./lib/database";
+import { handleDemo } from "./routes/demo.ts";
+import { handleEarlyAccess } from "./routes/early-access.ts";
+import { initializeDatabase } from "./lib/database.ts";
 
 export function createServer() {
   const app = express();
