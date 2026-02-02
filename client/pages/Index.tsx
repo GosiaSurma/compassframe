@@ -94,7 +94,7 @@ export default function Index() {
         },
         competence: {
           avoid: "Why can't you just focus? Your brother gets better grades.",
-          response: "I see you struggling. Let's figure this out together—what's the hardest part?",
+          response: "I see you struggling. Let's figure this out together-what's the hardest part?",
         },
         identity: {
           avoid: "You need to be realistic about what you can achieve.",
@@ -134,7 +134,7 @@ export default function Index() {
         },
         identity: {
           avoid: "Those friends are a bad influence on you.",
-          response: "Tell me who YOU are becoming. These friendships—what are they teaching you?",
+          response: "Tell me who YOU are becoming. These friendships-what are they teaching you?",
         },
       },
       rules: {
@@ -278,7 +278,7 @@ export default function Index() {
             </h1>
 
             <p className="text-lg sm:text-xl text-slate-600 font-light mb-10 max-w-xl">
-              Compassframe helps parents step into their teen's world—in moments of conflict—before responding. No lectures. Just understanding.
+              Compassframe helps parents step into their teen's world-in moments of conflict-before responding. No lectures. Just understanding.
             </p>
 
             <button
@@ -349,9 +349,8 @@ export default function Index() {
               {[0, 1, 2, 3].map((i) => (
                 <div
                   key={i}
-                  className={`h-2 flex-1 rounded-full transition-all duration-300 ${
-                    i <= demoStep ? "bg-blue-500" : "bg-slate-300"
-                  }`}
+                  className={`h-2 flex-1 rounded-full transition-all duration-300 ${i <= demoStep ? "bg-blue-500" : "bg-slate-300"
+                    }`}
                 />
               ))}
             </div>
@@ -595,7 +594,7 @@ export default function Index() {
 
           <div className="mt-12 p-8 bg-blue-50 rounded-2xl border-2 border-blue-300 text-center">
             <p className="text-lg text-slate-700">
-              <span className="font-bold text-blue-700">You don't need to become them.</span> You just need to understand them. The bridge isn't about abandoning who you are—it's about making space for who they're becoming.
+              <span className="font-bold text-blue-700">You don't need to become them.</span> You just need to understand them. The bridge isn't about abandoning who you are-it's about making space for who they're becoming.
             </p>
           </div>
         </div>
