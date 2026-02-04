@@ -648,7 +648,7 @@ export default function Index() {
             {[
               { title: "No lectures", desc: "We don't tell you what to say. We help you understand what's really happening." },
               { title: "No behavior hacks", desc: "This isn't about tricks. It's about genuine connection with your teen." },
-              { title: "Grounded in science", desc: "Built on Motivation Interviewing, adolescent psychology, and clinical research." },
+              { title: "Grounded in science", desc: "Built on Motivational Interviewing, adolescent psychology, and clinical research." },
               { title: "For real families", desc: "Designed by clinicians and parents who've lived this. Not theoretical. Real." },
             ].map((item) => (
               <div key={item.title} className="p-8 bg-white rounded-2xl border-2 border-slate-200 hover:border-blue-300 hover:shadow-lg transition-all">
@@ -665,7 +665,7 @@ export default function Index() {
         <div className="max-w-4xl mx-auto">
           <h2 className="text-5xl font-bold text-center mb-6">Built by clinicians and builders</h2>
           <p className="text-center text-slate-600 text-lg mb-16 max-w-2xl mx-auto">
-            Psychiatry + Motivation Interviewing + engineering. Real expertise. Real product.
+            Psychiatry + Motivational Interviewing + engineering. Real expertise. Real product.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
