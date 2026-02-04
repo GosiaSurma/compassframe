@@ -278,7 +278,7 @@ export default function Index() {
             </h1>
 
             <p className="text-lg sm:text-xl text-slate-600 font-light mb-10 max-w-xl">
-              Compassframe is a new communication channel for parents and teens—built on guided reflection and narrative devices.
+              Compassframe is a new communication channel for parents and teens - built on guided reflection and narrative devices.
             </p>
 
             <button
@@ -594,7 +594,7 @@ export default function Index() {
 
           <div className="mt-12 p-8 bg-blue-50 rounded-2xl border-2 border-blue-300 text-center">
             <p className="text-lg text-slate-700">
-              <span className="font-bold text-blue-700">You don't need to become them.</span> You just need to understand them. The bridge isn't about abandoning who you are-it's about making space for who they're becoming.
+              <span className="font-bold text-blue-700">You don't need to understand them.</span> You just need to understand them. The bridge isn't about abandoning who you are-it's about making space for who they're becoming.
             </p>
           </div>
         </div>
@@ -648,7 +648,7 @@ export default function Index() {
             {[
               { title: "No lectures", desc: "We don't tell you what to say. We help you understand what's really happening." },
               { title: "No behavior hacks", desc: "This isn't about tricks. It's about genuine connection with your teen." },
-              { title: "Grounded in science", desc: "Built on attachment theory, adolescent neuroscience, and clinical research." },
+              { title: "Grounded in science", desc: "Built on Motivation Interviewing, adolescent psychology, and clinical research." },
               { title: "For real families", desc: "Designed by clinicians and parents who've lived this. Not theoretical. Real." },
             ].map((item) => (
               <div key={item.title} className="p-8 bg-white rounded-2xl border-2 border-slate-200 hover:border-blue-300 hover:shadow-lg transition-all">
@@ -665,7 +665,7 @@ export default function Index() {
         <div className="max-w-4xl mx-auto">
           <h2 className="text-5xl font-bold text-center mb-6">Built by clinicians and builders</h2>
           <p className="text-center text-slate-600 text-lg mb-16 max-w-2xl mx-auto">
-            Psychiatry + behavioral science + engineering. Real expertise. Real product.
+            Psychiatry + Motivation Interviewing + engineering. Real expertise. Real product.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -718,7 +718,7 @@ export default function Index() {
             </div>
             <span className="text-lg font-bold">Compassframe</span>
           </div>
-          <p className="text-sm">© 2024 Compassframe. Rebuilding connection. One conflict at a time.</p>
+          <p className="text-sm">© 2026 Compassframe. Understanding your teen. One conversation at a time.</p>
         </div>
       </footer>
 
