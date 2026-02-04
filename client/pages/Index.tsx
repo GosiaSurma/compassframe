@@ -278,7 +278,7 @@ export default function Index() {
             </h1>
 
             <p className="text-lg sm:text-xl text-slate-600 font-light mb-10 max-w-xl">
-              Compassframe helps parents step into their teen's world-in moments of conflict-before responding. No lectures. Just understanding.
+              Compassframe is a new communication channel for parents and teens—built on guided reflection and narrative devices.
             </p>
 
             <button
