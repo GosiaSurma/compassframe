@@ -1,10 +1,10 @@
 import { Router } from "express";
 import { storage } from "../storage";
-import { api } from "../../shared/routes";
+import { api } from "../../../shared/routes";
 import { z } from "zod";
 import OpenAI from "openai";
-import { ESSENCE_WHITELIST, ESSENCE_ONTOLOGY } from "../../shared/essences";
-import { DEFAULT_MI_METRICS, type MiMetrics, DEFAULT_ENCOUNTER_STATE, type EncounterState, type EncounterChoiceRecord } from "../../shared/schema";
+import { ESSENCE_WHITELIST, ESSENCE_ONTOLOGY } from "../../../shared/essences";
+import { DEFAULT_MI_METRICS, type MiMetrics, DEFAULT_ENCOUNTER_STATE, type EncounterState, type EncounterChoiceRecord } from "../../../shared/schema";
 import {
     classifyResponse,
     detectChangeTalk,
@@ -768,7 +768,7 @@ router.post(api.relays.create.path, isAuthenticated, async (req: any, res) => {
         const input = api.relays.create.input.parse(req.body);
         const role = "parent"; // Default for now, could be derived from session if passed
 
-        const relay = await storage.createRelay(userId, role, input);
+        const relay = await storage.createRelay(userId, role, input as any);
         res.status(201).json(relay);
     } catch (err) {
         console.error("Create relay error:", err);
