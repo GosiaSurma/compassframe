@@ -33,7 +33,7 @@
         "./client/*"
       ],
       "@shared/*": [
-        "./shared/*"
+        "./api/shared/*"
       ]
     }
   },

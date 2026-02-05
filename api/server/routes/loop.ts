@@ -1,10 +1,10 @@
 import { Router } from "express";
 import { storage } from "../storage";
-import { api } from "../../../shared/routes";
+import { api } from "../../shared/routes";
 import { z } from "zod";
 import OpenAI from "openai";
-import { ESSENCE_WHITELIST, ESSENCE_ONTOLOGY } from "../../../shared/essences";
-import { DEFAULT_MI_METRICS, type MiMetrics, DEFAULT_ENCOUNTER_STATE, type EncounterState, type EncounterChoiceRecord } from "../../../shared/schema";
+import { ESSENCE_WHITELIST, ESSENCE_ONTOLOGY } from "../../shared/essences";
+import { DEFAULT_MI_METRICS, type MiMetrics, DEFAULT_ENCOUNTER_STATE, type EncounterState, type EncounterChoiceRecord } from "../../shared/schema";
 import {
     classifyResponse,
     detectChangeTalk,
