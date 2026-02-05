@@ -1,0 +1,11 @@
+
+> typecheck
+> tsc
+
+server/routes/loop.ts(218,61): error TS2345: Argument of type '{ openingQuestion: string; role?: "parent" | "teen"; shadowId?: string; shadowCustom?: string; }' is not assignable to parameter of type 'CreateSessionRequest & { openingQuestion?: string; }'.
+  Type '{ openingQuestion: string; role?: "parent" | "teen"; shadowId?: string; shadowCustom?: string; }' is not assignable to type 'CreateSessionRequest'.
+    Property 'role' is optional in type '{ openingQuestion: string; role?: "parent" | "teen"; shadowId?: string; shadowCustom?: string; }' but required in type 'CreateSessionRequest'.
+server/routes/loop.ts(596,13): error TS2322: Type '{ calm?: number; understanding?: number; boundary?: number; }' is not assignable to type '{ calm: number; understanding: number; boundary: number; }'.
+  Property 'calm' is optional in type '{ calm?: number; understanding?: number; boundary?: number; }' but required in type '{ calm: number; understanding: number; boundary: number; }'.
+shared/models/chat.ts(2,36): error TS2307: Cannot find module 'drizzle-zod' or its corresponding type declarations.
+shared/schema.ts(4,36): error TS2307: Cannot find module 'drizzle-zod' or its corresponding type declarations.
