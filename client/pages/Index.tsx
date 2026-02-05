@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronRight, Menu, X, ArrowRight } from "lucide-react";
+import { NativeDemo } from "@/components/NativeDemo";
+import Loop from "./Loop";
 
 export default function Index() {
   const navigate = useNavigate();
   const [demoStep, setDemoStep] = useState(0);
+  const [activeSessionId, setActiveSessionId] = useState<number | null>(null);
   const [selectedConflict, setSelectedConflict] = useState<string | null>(null);
   const [selectedEmotion, setSelectedEmotion] = useState<string | null>(null);
   const [selectedTeen, setSelectedTeen] = useState<string | null>(null);
@@ -268,13 +271,12 @@ export default function Index() {
             </div>
 
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold leading-tight tracking-tight mb-8">
-              <span className="block">When conflict</span>
-              <span className="block">stops being</span>
+              <span className="block">When you understand</span>
               <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                personal,
+                their world.
               </span>
-              <span className="block">everything</span>
-              <span className="block">changes.</span>
+              <span className="block">A new form of connection</span>
+              <span className="block">becomes possible.</span>
             </h1>
 
             <p className="text-lg sm:text-xl text-slate-600 font-light mb-10 max-w-xl">
@@ -338,179 +340,25 @@ export default function Index() {
       <section id="demo-section" className="py-20 lg:py-32 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-slate-50 to-white">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-5xl sm:text-6xl font-bold text-center mb-4">Experience it yourself</h2>
+
+
+
+
           <p className="text-center text-slate-600 text-lg mb-16 max-w-2xl mx-auto">
             Choose your scenario and watch how understanding transforms response.
           </p>
 
-          {/* Demo Panel */}
-          <div className="bg-white rounded-3xl p-8 sm:p-12 min-h-[700px] flex flex-col justify-between border-2 border-slate-200 shadow-2xl">
-            {/* Progress bar */}
-            <div className="flex gap-2 mb-8">
-              {[0, 1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className={`h-2 flex-1 rounded-full transition-all duration-300 ${i <= demoStep ? "bg-blue-500" : "bg-slate-300"
-                    }`}
-                />
-              ))}
-            </div>
 
-            {/* Step 1 - Select Conflict */}
-            {demoStep === 0 && (
-              <div className="animate-fade-in space-y-8">
-                <div>
-                  <span className="text-blue-600 text-sm font-bold uppercase tracking-widest">Step 1</span>
-                  <h3 className="text-4xl font-bold mt-3 mb-4">What's happening at home?</h3>
-                  <p className="text-lg text-slate-600">Choose a conflict that feels familiar.</p>
-                </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {conflictScenarios.map((conflict) => (
-                    <button
-                      key={conflict.id}
-                      onClick={() => {
-                        setSelectedConflict(conflict.id);
-                        setDemoStep(1);
-                      }}
-                      className="p-6 text-left bg-slate-50 border-2 border-slate-200 rounded-xl hover:border-blue-400 hover:bg-blue-50 transition-all duration-200 transform hover:scale-105"
-                    >
-                      <span className="text-3xl mb-3 block">{conflict.emoji}</span>
-                      <p className="text-lg font-semibold text-slate-900">{conflict.label}</p>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Step 2 - Select Parent Emotion */}
-            {demoStep === 1 && (
-              <div className="animate-fade-in space-y-8">
-                <div>
-                  <span className="text-blue-600 text-sm font-bold uppercase tracking-widest">Step 2</span>
-                  <h3 className="text-4xl font-bold mt-3 mb-4">How does it feel for you?</h3>
-                  <p className="text-lg text-slate-600">What emotion comes up most?</p>
-                </div>
-
-                <div className="space-y-3">
-                  {parentEmotions.map((emotion) => (
-                    <button
-                      key={emotion.id}
-                      onClick={() => {
-                        setSelectedEmotion(emotion.id);
-                        setDemoStep(2);
-                      }}
-                      className="w-full p-5 text-left bg-slate-50 border-2 border-slate-200 rounded-xl hover:border-blue-400 hover:bg-blue-50 transition-all duration-200 transform hover:scale-105"
-                    >
-                      <p className="text-lg font-semibold text-slate-900">{emotion.label}</p>
-                    </button>
-                  ))}
-                </div>
-
-                <button
-                  onClick={() => {
-                    resetDemo();
-                  }}
-                  className="text-blue-600 hover:text-blue-700 font-semibold text-sm"
-                >
-                  ← Back
-                </button>
-              </div>
-            )}
-
-            {/* Step 3 - Select Teen Need */}
-            {demoStep === 2 && (
-              <div className="animate-fade-in space-y-8">
-                <div className="p-6 bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl border-2 border-purple-200">
-                  <p className="text-xs font-bold text-purple-600 uppercase mb-2">🌉 Entering their world</p>
-                  <p className="text-lg font-semibold text-slate-900">When you step into their perspective, everything makes sense.</p>
-                </div>
-
-                <div>
-                  <span className="text-blue-600 text-sm font-bold uppercase tracking-widest">Step 3</span>
-                  <h3 className="text-4xl font-bold mt-3 mb-4">What might they be protecting?</h3>
-                  <p className="text-lg text-slate-600">This is their inner world. Choose what resonates.</p>
-                </div>
-
-                <div className="space-y-3">
-                  {(teenNeeds[selectedConflict || "grades"] || []).map((need) => (
-                    <button
-                      key={need.id}
-                      onClick={() => {
-                        setSelectedTeen(need.id);
-                        setDemoStep(3);
-                      }}
-                      className="w-full p-5 text-left bg-gradient-to-r from-purple-50 to-blue-50 border-2 border-purple-200 rounded-xl hover:border-purple-500 hover:shadow-lg transition-all duration-200 transform hover:scale-105"
-                    >
-                      <p className="text-lg font-semibold text-slate-900">{need.label}</p>
-                      <p className="text-sm text-slate-600 mt-1">{need.need}</p>
-                    </button>
-                  ))}
-                </div>
-
-                <button
-                  onClick={() => setDemoStep(1)}
-                  className="text-blue-600 hover:text-blue-700 font-semibold text-sm"
-                >
-                  ← Back
-                </button>
-              </div>
-            )}
-
-            {/* Step 4 - Show Output */}
-            {demoStep === 3 && (
-              <div className="animate-fade-in space-y-8">
-                <div className="relative">
-                  <span className="text-blue-600 text-sm font-bold uppercase tracking-widest">Step 4</span>
-                  <h3 className="text-4xl font-bold mt-3 mb-4">The bridge between worlds</h3>
-                  <p className="text-lg text-slate-600">You've entered their world. Now you respond from understanding.</p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                  {/* Parent's Instinct */}
-                  <div className="p-6 bg-slate-100 rounded-xl border-2 border-slate-300">
-                    <p className="text-xs font-bold text-slate-600 uppercase mb-3">Your instinct (parent world)</p>
-                    <p className="text-sm italic text-slate-700">"{getOutput().avoid}"</p>
-                    <p className="text-xs text-slate-500 mt-3">→ Creates walls</p>
-                  </div>
-
-                  {/* The Bridge */}
-                  <div className="flex items-center justify-center">
-                    <div className="text-center">
-                      <p className="text-3xl mb-2">🌉</p>
-                      <p className="text-xs font-bold text-blue-600">UNDERSTANDING</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="p-8 bg-gradient-to-r from-purple-50 to-blue-50 border-2 border-purple-300 rounded-xl border-l-4 border-l-purple-500">
-                  <p className="text-sm text-purple-600 font-bold uppercase mb-3">✨ From their world (what works)</p>
-                  <p className="text-lg text-purple-900 font-semibold italic">"{getOutput().response}"</p>
-                  <p className="text-sm text-purple-700 mt-4 font-medium">→ Builds bridges, not walls</p>
-                </div>
-
-                <div className="p-6 bg-blue-50 rounded-xl border-2 border-blue-200">
-                  <p className="text-sm text-slate-700">
-                    <span className="font-bold">What changed:</span> You shifted from your world's perspective to theirs. You acknowledged what they're protecting instead of fighting it. <span className="text-blue-700 font-semibold">This is the bridge.</span>
-                  </p>
-                </div>
-
-                <div className="flex gap-3 pt-6">
-                  <button
-                    onClick={resetDemo}
-                    className="flex-1 px-8 py-4 bg-blue-500 text-white font-bold rounded-xl hover:bg-blue-600 transition-all transform hover:scale-105 text-lg"
-                  >
-                    Try another scenario
-                  </button>
-                  <button
-                    onClick={() => navigate("/early-access")}
-                    className="flex-1 px-8 py-4 bg-gradient-to-r from-purple-500 to-blue-600 text-white font-bold rounded-xl hover:from-purple-600 hover:to-blue-700 transition-all transform hover:scale-105 text-lg shadow-lg"
-                  >
-                    Get early access
-                  </button>
-                </div>
-              </div>
+          <div className="h-[600px] w-full mb-12 shadow-2xl rounded-2xl overflow-hidden border-4 border-white bg-white">
+            {activeSessionId ? (
+              <Loop sessionId={activeSessionId} embedded={true} />
+            ) : (
+              <NativeDemo onStartSession={setActiveSessionId} />
             )}
           </div>
+
+
         </div>
       </section>
 
@@ -531,19 +379,19 @@ export default function Index() {
               <div className="p-8 bg-slate-100 rounded-2xl border-2 border-slate-300 space-y-6">
                 <div>
                   <p className="text-sm font-bold text-slate-600 uppercase mb-2">Media</p>
-                  <p className="text-slate-700">TV, Movies, News</p>
+                  <p className="text-slate-700">Longer-form content, slower cycles, fewer abrupt shifts in context.</p>
                 </div>
                 <div>
                   <p className="text-sm font-bold text-slate-600 uppercase mb-2">Communication</p>
-                  <p className="text-slate-700">Phone calls, Email, Texts</p>
+                  <p className="text-slate-700">Messages aim to stand alone, intent is stated explicitly.</p>
                 </div>
                 <div>
                   <p className="text-sm font-bold text-slate-600 uppercase mb-2">Thinking</p>
-                  <p className="text-slate-700">Linear, Step-by-step, Planned</p>
+                  <p className="text-slate-700">Preference for a single thread, explanation, and closure.</p>
                 </div>
                 <div>
                   <p className="text-sm font-bold text-slate-600 uppercase mb-2">Community</p>
-                  <p className="text-slate-700">Local, In-person, Defined</p>
+                  <p className="text-slate-700">Fewer overlapping circles in daily life, lower audience mixing.</p>
                 </div>
               </div>
             </div>
@@ -554,19 +402,19 @@ export default function Index() {
               <div className="p-8 bg-gradient-to-br from-purple-50 to-blue-50 rounded-2xl border-2 border-purple-300 space-y-6">
                 <div>
                   <p className="text-sm font-bold text-purple-600 uppercase mb-2">Media</p>
-                  <p className="text-slate-700">TikTok, YouTube, Streaming, Discord</p>
+                  <p className="text-slate-700">Stream-first content, fast remixing, constant context switching.</p>
                 </div>
                 <div>
                   <p className="text-sm font-bold text-purple-600 uppercase mb-2">Communication</p>
-                  <p className="text-slate-700">Memes, Stories, Bereal, Finsta</p>
+                  <p className="text-slate-700">Messages rely on references, subtext, and who is watching.</p>
                 </div>
                 <div>
                   <p className="text-sm font-bold text-purple-600 uppercase mb-2">Thinking</p>
-                  <p className="text-slate-700">Non-linear, Multi-threaded, In-the-moment</p>
+                  <p className="text-slate-700">Comfort with parallel threads, fast social inference, delayed closure.</p>
                 </div>
                 <div>
                   <p className="text-sm font-bold text-purple-600 uppercase mb-2">Community</p>
-                  <p className="text-slate-700">Global, Online, Fluid, Constantly evolving</p>
+                  <p className="text-slate-700">Overlapping circles, higher audience mixing, moments travel across groups.</p>
                 </div>
               </div>
             </div>
@@ -583,7 +431,7 @@ export default function Index() {
               <div className="text-center p-6 bg-gradient-to-r from-blue-400 to-purple-400 rounded-xl transform scale-110">
                 <p className="text-3xl mb-2 text-white">🌉</p>
                 <p className="font-bold text-white">Step in &</p>
-                <p className="font-bold text-white">listen</p>
+                <p className="font-bold text-white">play</p>
               </div>
               <div className="text-center p-6 bg-gradient-to-br from-purple-100 to-blue-100 rounded-xl">
                 <p className="text-3xl mb-2">👧</p>
@@ -594,7 +442,8 @@ export default function Index() {
 
           <div className="mt-12 p-8 bg-blue-50 rounded-2xl border-2 border-blue-300 text-center">
             <p className="text-lg text-slate-700">
-              <span className="font-bold text-blue-700">You don't need to understand them.</span> You just need to understand them. The bridge isn't about abandoning who you are-it's about making space for who they're becoming.
+              <span className="font-bold text-blue-700">You don't need to understand everything.</span>
+              You just need to experiment the rules of their world through play. The bridge isn't about abandoning who you are - it's about sharing a safe space for change and growth.
             </p>
           </div>
         </div>
@@ -609,18 +458,30 @@ export default function Index() {
             {[
               {
                 num: "1",
-                title: "You describe the conflict",
-                desc: "In real moments. What happened? What was said? We meet you where it's real.",
+                title: "Reflection Phase",
+                desc: "A short guided reflection grounded in Motivational Interviewing, an evidence-based approach used in healthcare and education. It gives you a structured space to slow down, put words to what is happening, and clarify what matters to you, without lectures or advice.",
               },
               {
                 num: "2",
-                title: "We surface what's underneath",
-                desc: "Your teen isn't being difficult. They're protecting something. We help you see it.",
+                title: "Challenge Phase",
+                desc: "A friendly, guided duel that turns the moment into text with choices. The system surfaces the expectations and social pressures hiding inside the conflict, gives them a voice, and lets you respond in a way that keeps your experience valid and your intent clear, without turning your teen into the opponent.",
               },
               {
                 num: "3",
-                title: "You respond with understanding",
-                desc: "Not control. Not lectures. With genuine understanding. Everything shifts.",
+                title: "Gift Phase",
+                desc: (
+                  <span className="block space-y-1">
+                    At the end, you choose one gift to carry forward or share:
+                    <span className="block pl-4 mt-2">📜 <span className="font-semibold">Strength (Scroll):</span> what you did right under pressure, captured in a reusable form</span>
+                    <span className="block pl-4">🎯 <span className="font-semibold">Vulnerability (Crystal):</span> where the pattern hooks you, made visible without blame</span>
+                    <span className="block pl-4">🧪 <span className="font-semibold">Synthesis (Potion):</span> a compact summary you can return to later</span>
+                  </span>
+                ),
+              },
+              {
+                num: "4",
+                title: "New Cycle",
+                desc: "Send the gift to a family member and invite them into Compassframe. They can follow your reflection in their own way, continue the thread, and start their own process from the same shared moment.",
               },
             ].map((step) => (
               <div key={step.num} className="flex gap-8">
@@ -631,7 +492,7 @@ export default function Index() {
                 </div>
                 <div>
                   <h3 className="text-2xl font-bold mb-3">{step.title}</h3>
-                  <p className="text-lg text-slate-600">{step.desc}</p>
+                  <div className="text-lg text-slate-600">{step.desc}</div>
                 </div>
               </div>
             ))}

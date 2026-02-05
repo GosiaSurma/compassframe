@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo.ts";
 import { handleEarlyAccess } from "./routes/early-access.ts";
+import { loopRouter } from "./routes/loop.ts";
 import { initializeDatabase } from "./lib/database.ts";
 
 export function createServer() {
@@ -16,8 +17,8 @@ export function createServer() {
   // Initialize database on startup
   if (process.env.DATABASE_URL) {
     initializeDatabase().catch((error) => {
-      console.error("Failed to initialize database:", error);
-      // Don't exit, allow server to continue but warn about database issues
+      console.warn("Database initialization failed (running in Memory Mode):", error.message);
+      // Don't exit, allow server to continue using MemStorage
     });
   } else {
     console.warn("DATABASE_URL not set. Database features will not work.");
@@ -30,6 +31,7 @@ export function createServer() {
   });
 
   app.get("/api/demo", handleDemo);
+  app.use(loopRouter);
 
   // Early access email signup
   app.post("/api/early-access", handleEarlyAccess);
