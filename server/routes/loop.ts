@@ -279,25 +279,37 @@ router.put(api.sessions.update.path, isAuthenticated, async (req: any, res) => {
 router.post(api.sessions.turn.path, isAuthenticated, async (req: any, res) => {
     try {
         const userId = req.user.claims.sub;
-        const session = await storage.getSession(Number(req.params.id));
 
-        if (!session) {
-            return res.status(404).json({ message: "Session not found" });
-        }
-        if (session.userId !== userId) {
-            return res.status(401).json({ message: "Unauthorized" });
+
+        const { userText, mode, session: bodySession, messages: bodyMessages } = api.sessions.turn.input.parse(req.body);
+
+        let session;
+        let previousMessages;
+        const isStateless = !!bodySession;
+
+        if (isStateless) {
+            session = bodySession;
+            // Ensure messages are correctly formatted if coming from client state
+            previousMessages = bodyMessages || [];
+        } else {
+            session = await storage.getSession(Number(req.params.id));
+            if (!session) {
+                return res.status(404).json({ message: "Session not found" });
+            }
+            if (session.userId !== userId) {
+                return res.status(401).json({ message: "Unauthorized" });
+            }
+            const currentCycle = session.cycle || 1;
+            previousMessages = await storage.getSessionMessages(session.id, currentCycle);
         }
 
-        const { userText, mode } = api.sessions.turn.input.parse(req.body);
         const shadowLabel = SHADOWS_CATALOG.find(s => s.id === session.shadowId)?.label || session.shadowCustom || "your topic";
 
-        // Get conversation history for context (only current cycle)
-        const currentCycle = session.cycle || 1;
-        const previousMessages = await storage.getSessionMessages(session.id, currentCycle);
-        const conversationHistory = previousMessages.map(m => ([
+        // Get conversation history for context
+        const conversationHistory = previousMessages.map((m: any) => ([
             { role: "user" as const, content: m.userText || "" },
             { role: "assistant" as const, content: m.assistantText || "" }
-        ])).flat().filter(m => m.content);
+        ])).flat().filter((m: any) => m.content);
 
         // === MI TRACKING: Detect change talk in user message ===
         const changeTalk = await detectChangeTalk(userText);
@@ -403,22 +415,27 @@ ${userText}`;
             ? "awaiting_crystallize"
             : (currentStatus === "companion_active" ? "companion_active" : "active");
 
-        await storage.updateSession(session.id, {
+        const sessionUpdates = {
+            id: session.id,
             turn: nextTurn,
             accumulatedScores: newScores,
             miMetrics: updatedMiMetrics,
             status: newStatus
-        });
+        };
 
-        await storage.createMessage(
-            session.id,
-            currentCycle,
-            currentTurn,
-            mode,
-            userText,
-            engineResponse.assistant_text,
-            { chips: validatedChips, stabilityIndex, canCrystallize }
-        );
+        if (!isStateless) {
+            await storage.updateSession(session.id, sessionUpdates);
+
+            await storage.createMessage(
+                session.id,
+                cycle,
+                currentTurn,
+                mode,
+                userText,
+                engineResponse.assistant_text,
+                { chips: validatedChips, stabilityIndex, canCrystallize }
+            );
+        }
 
         res.json({
             assistantText: engineResponse.assistant_text,
@@ -427,7 +444,9 @@ ${userText}`;
             nextTurn: nextTurn,
             stabilityIndex,
             canCrystallize: canCrystallize || isComplete,
-            sessionStatus: isComplete ? "crystallized" : "active"
+            sessionStatus: isComplete ? "crystallized" : "active",
+            // Return updated session for stateless client
+            updatedSession: { ...session, ...sessionUpdates }
         });
     } catch (err) {
         console.error("Turn error:", err);

@@ -26,15 +26,23 @@ type ChatMessage = {
     turn?: number;
 };
 
-export default function Loop({ sessionId, embedded }: { sessionId?: number; embedded?: boolean } = {}) {
+export default function Loop({ initialSession, embedded }: { initialSession?: any; embedded?: boolean } = {}) {
     const params = useParams<{ id: string }>();
-    const id = sessionId ? String(sessionId) : params.id;
+    const id = initialSession ? String(initialSession.id) : params.id;
     const navigate = useNavigate();
     const { toast } = useToast();
 
-    const [messages, setMessages] = useState<ChatMessage[]>([]);
+    const [messages, setMessages] = useState<ChatMessage[]>(
+        initialSession?.openingQuestion ? [{
+            id: Date.now(),
+            role: "assistant",
+            text: initialSession.openingQuestion,
+            turn: 1
+        }] : []
+    );
     const [input, setInput] = useState("");
-    const [currentTurn, setCurrentTurn] = useState(1);
+    const [currentTurn, setCurrentTurn] = useState<number>(1);
+    const [currentSession, setCurrentSession] = useState<any>(initialSession || null);
     const [canCrystallize, setCanCrystallize] = useState(false);
     const [stabilityIndex, setStabilityIndex] = useState(0);
     const scrollRef = useRef<HTMLDivElement>(null);
@@ -45,6 +53,7 @@ export default function Loop({ sessionId, embedded }: { sessionId?: number; embe
         messages: any[];
     }>({
         queryKey: ['/api/sessions', id],
+        enabled: !initialSession && !!id
     });
 
     // Track when session data has been initialized to avoid re-processing
@@ -54,43 +63,44 @@ export default function Loop({ sessionId, embedded }: { sessionId?: number; embe
 
     // Sync local state with session data
     // Backend now filters messages by cycle, so we just load what the server returns
+    // Sync from API if legacy mode
     useEffect(() => {
-        if (!sessionData?.session) return;
+        if (!initialSession && sessionData?.session) {
+            setCurrentSession(sessionData.session);
+            const turn = sessionData.session.turn || 1;
+            setCurrentTurn(turn);
 
-        // Always sync currentTurn with server state
-        const turn = sessionData.session.turn || 1;
-        setCurrentTurn(turn);
+            // Only initialize messages if we explicitly fetched them (legacy)
+            // In stateless mode, we manage messages entirely in client state after init
+            const sessionKey = `${sessionData.session.id}-${sessionData.session.cycle || 1}`;
+            if (initializedForKey !== sessionKey) {
+                setInitializedForKey(sessionKey);
 
-        // Enable crystallization button if turn >= 4 (8 turns remaining)
-        setCanCrystallize(turn >= 4 && turn < 12);
+                const existingMessages: ChatMessage[] = [];
+                (sessionData.messages || []).forEach((m: any, idx: number) => {
+                    if (m.userText) existingMessages.push({ id: idx * 2, role: "user", text: m.userText, turn: m.turn });
+                    if (m.assistantText) {
+                        const highlights = m.highlights as any;
+                        existingMessages.push({
+                            id: idx * 2 + 1,
+                            role: "assistant",
+                            text: m.assistantText,
+                            chips: highlights?.chips?.filter((c: Chip) => !c.is_hidden) || [],
+                            turn: m.turn
+                        });
+                    }
+                });
+                setMessages(existingMessages);
 
-        // Create a unique key for this session + cycle combination
-        const sessionKey = `${sessionData.session.id}-${sessionCycle}`;
-
-        // Only process once per session/cycle to avoid overwriting during chat
-        if (initializedForKey !== sessionKey) {
-            setInitializedForKey(sessionKey);
-
-            // Build messages from server data (already filtered by cycle on backend)
-            const existingMessages: ChatMessage[] = [];
-            sessionData.messages?.forEach((m: any, idx: number) => {
-                if (m.userText) {
-                    existingMessages.push({ id: idx * 2, role: "user", text: m.userText, turn: m.turn });
+                // Set crystallization state
+                const lastMsg = sessionData.messages?.[sessionData.messages.length - 1];
+                if (lastMsg?.highlights) {
+                    setCanCrystallize(lastMsg.highlights.canCrystallize || false);
+                    setStabilityIndex(lastMsg.highlights.stabilityIndex || 0);
                 }
-                if (m.assistantText) {
-                    const highlights = m.highlights as any;
-                    existingMessages.push({
-                        id: idx * 2 + 1,
-                        role: "assistant",
-                        text: m.assistantText,
-                        chips: highlights?.chips?.filter((c: Chip) => !c.is_hidden) || [],
-                        turn: m.turn
-                    });
-                }
-            });
-            setMessages(existingMessages);
+            }
         }
-    }, [sessionData, sessionCycle, initializedForKey]);
+    }, [sessionData, initialSession, initializedForKey]);
 
     // Auto-redirect to crystallization at turn 12 or when status is awaiting_crystallize
     useEffect(() => {
@@ -146,13 +156,19 @@ export default function Loop({ sessionId, embedded }: { sessionId?: number; embe
 
     const turnMutation = useMutation({
         mutationFn: async (userText: string) => {
-            const res = await apiRequest('POST', `/api/sessions/${id}/turn`, {
+            const payload: any = {
                 userText,
-                mode: 'reflect'
-            });
+                mode: 'reflect',
+                session: currentSession,
+                messages: messages
+            };
+            const res = await apiRequest('POST', `/api/sessions/${id}/turn`, payload);
             return res.json();
         },
         onSuccess: (response) => {
+            if (response.updatedSession) {
+                setCurrentSession(response.updatedSession);
+            }
             // Add assistant message with chips
             setMessages(prev => [...prev, {
                 id: Date.now(),
@@ -208,7 +224,7 @@ export default function Loop({ sessionId, embedded }: { sessionId?: number; embe
         );
     }
 
-    const session = sessionData?.session;
+    const session = currentSession;
     const shadowLabel = session?.shadowId?.replace('shadow_', '').replace(/_/g, ' ') || 'your topic';
 
     const COMPANIONS: Record<string, { name: string; icon: string }> = {

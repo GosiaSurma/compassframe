@@ -7,7 +7,17 @@ import Loop from "./Loop";
 export default function Index() {
   const navigate = useNavigate();
   const [demoStep, setDemoStep] = useState(0);
-  const [activeSessionId, setActiveSessionId] = useState<number | null>(null);
+  const [activeSession, setActiveSession] = useState<any>(null); // Store full session object
+
+  // ... (skipped lines)
+
+  <div className="h-[600px] w-full mb-12 shadow-2xl rounded-2xl overflow-hidden border-4 border-white bg-white">
+    {activeSession ? (
+      <Loop initialSession={activeSession} embedded={true} />
+    ) : (
+      <NativeDemo onStartSession={setActiveSession} />
+    )}
+  </div>
   const [selectedConflict, setSelectedConflict] = useState<string | null>(null);
   const [selectedEmotion, setSelectedEmotion] = useState<string | null>(null);
   const [selectedTeen, setSelectedTeen] = useState<string | null>(null);
@@ -351,10 +361,10 @@ export default function Index() {
 
 
           <div className="h-[600px] w-full mb-12 shadow-2xl rounded-2xl overflow-hidden border-4 border-white bg-white">
-            {activeSessionId ? (
-              <Loop sessionId={activeSessionId} embedded={true} />
+            {activeSession ? (
+              <Loop initialSession={activeSession} embedded={true} />
             ) : (
-              <NativeDemo onStartSession={setActiveSessionId} />
+              <NativeDemo onStartSession={setActiveSession} />
             )}
           </div>
 

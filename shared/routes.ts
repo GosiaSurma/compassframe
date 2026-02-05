@@ -57,6 +57,8 @@ export const api = {
       input: z.object({
         userText: z.string(),
         mode: z.enum(['reflect', 'battle']),
+        session: z.any().optional(), // For stateless mode
+        messages: z.array(z.any()).optional(), // For stateless mode
       }),
       responses: {
         200: z.any(),
