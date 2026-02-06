@@ -24,6 +24,7 @@ const router = Router();
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY || process.env.AI_INTEGRATIONS_OPENAI_API_KEY;
 const OPENAI_TIMEOUT_MS = Number(process.env.OPENAI_TIMEOUT_MS || 8000);
 const OPENING_GREETING_TIMEOUT_MS = Number(process.env.OPENING_GREETING_TIMEOUT_MS || 2000);
+const OPENAI_GREETING_ENABLED = process.env.OPENAI_GREETING_ENABLED === "true";
 
 const openai = new OpenAI({
     apiKey: OPENAI_API_KEY,
@@ -194,7 +195,7 @@ async function generateOpeningGreeting(shadowId: string): Promise<string> {
     const shadowLabel = SHADOW_LABELS[shadowId] || "this topic";
 
     try {
-        if (!OPENAI_API_KEY) {
+        if (!OPENAI_API_KEY || !OPENAI_GREETING_ENABLED) {
             return `Let's explore ${shadowLabel} together. What's been your experience with this?`;
         }
 
