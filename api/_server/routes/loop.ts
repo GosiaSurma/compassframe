@@ -25,30 +25,30 @@ const OPENAI_API_KEY = process.env.OPENAI_API_KEY || process.env.AI_INTEGRATIONS
 const OPENAI_TIMEOUT_MS = Number(process.env.OPENAI_TIMEOUT_MS || 8000);
 const OPENING_GREETING_TIMEOUT_MS = Number(process.env.OPENING_GREETING_TIMEOUT_MS || 2000);
 
-function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
-    return new Promise<T>((resolve, reject) => {
-        const timer = setTimeout(() => reject(new Error("timeout")), ms);
-        promise
-            .then(resolve)
-            .catch(reject)
-            .finally(() => clearTimeout(timer));
-    });
-}
-
 const openai = new OpenAI({
     apiKey: OPENAI_API_KEY,
+    maxRetries: 0,
+    timeout: OPENAI_TIMEOUT_MS
 });
 
-async function createChatCompletion(params: any) {
+async function createChatCompletion(params: any, timeoutMs: number) {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), OPENAI_TIMEOUT_MS);
     try {
-        return await openai.chat.completions.create({
+        const timeoutPromise = new Promise<never>((_, reject) => {
+            const timer = setTimeout(() => {
+                controller.abort();
+                clearTimeout(timer);
+                reject(new Error("timeout"));
+            }, timeoutMs);
+        });
+
+        const requestPromise = openai.chat.completions.create({
             ...params,
             signal: controller.signal
         });
+
+        return await Promise.race([requestPromise, timeoutPromise]);
     } finally {
-        clearTimeout(timeout);
     }
 }
 
@@ -195,8 +195,8 @@ async function generateOpeningGreeting(shadowId: string): Promise<string> {
             return `Let's explore ${shadowLabel} together. What's been your experience with this?`;
         }
 
-        const completion = await withTimeout(
-            createChatCompletion({
+        const completion = await createChatCompletion(
+            {
                 model: "gpt-4o", // Changed to gpt-4o as gpt-5.1 is likely internal/not available
                 messages: [
                     {
@@ -215,7 +215,7 @@ Output ONLY the greeting. No quotes.`
                 ],
                 max_completion_tokens: 150,
                 temperature: 0.95
-            }),
+            },
             OPENING_GREETING_TIMEOUT_MS
         );
 
@@ -404,7 +404,7 @@ ${userText}`;
             ],
             response_format: { type: "json_object" },
             max_completion_tokens: 800
-        });
+        }, OPENAI_TIMEOUT_MS);
 
         const engineResponse = JSON.parse(completion.choices[0].message.content || "{}");
 

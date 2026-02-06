@@ -4,11 +4,11 @@ import cors from "cors";
 import { handleDemo } from "./routes/demo.js";
 import { handleEarlyAccess } from "./routes/early-access.js";
 import { loopRouter } from "./routes/loop.js";
-import { initializeDatabase } from "./lib/database.js";
+import { initializeDatabase, isDatabaseEnabled } from "./lib/database.js";
 
 function shouldInitializeDatabase() {
   const databaseUrl = process.env.DATABASE_URL;
-  if (!databaseUrl) return false;
+  if (!isDatabaseEnabled()) return false;
 
   if (process.env.NODE_ENV === "production" && /localhost|127\.0\.0\.1/i.test(databaseUrl)) {
     console.warn("DATABASE_URL points to localhost in production. Skipping database init.");
@@ -33,7 +33,7 @@ export function createServer() {
       // Don't exit, allow server to continue using MemStorage
     });
   } else {
-    console.warn("DATABASE_URL not set. Database features will not work.");
+    console.warn("Database disabled. Using memory storage.");
   }
 
   // Example API routes

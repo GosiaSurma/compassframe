@@ -2,9 +2,16 @@ import { Pool, PoolClient } from "pg";
 import { drizzle } from "drizzle-orm/node-postgres";
 import * as schema from "../../_shared/schema.js";
 
+const databaseUrl = process.env.DATABASE_URL;
+const databaseEnabled = process.env.ENABLE_DATABASE === "true" && !!databaseUrl;
+
+export function isDatabaseEnabled() {
+  return databaseEnabled;
+}
+
 // Create a connection pool
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: databaseUrl,
   ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
 });
 
