@@ -82,11 +82,10 @@ export function NativeDemo({ onStartSession }: { onStartSession?: (sessionId: nu
         } catch (err) {
             console.error("Failed to start session:", err);
             toast({
-                title: "Demo mode",
-                description: "Server is unavailable. Starting a local demo session instead.",
+                title: "Error starting session",
+                description: "Could not connect to the server. Please check your connection or try again. " + (err as Error).message,
+                variant: "destructive"
             });
-            navigate("/loop/demo");
-        } finally {
             setIsCreatingSession(false);
         }
     };

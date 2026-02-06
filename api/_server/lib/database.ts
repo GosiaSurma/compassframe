@@ -13,6 +13,10 @@ export function isDatabaseEnabled() {
 const pool = new Pool({
   connectionString: databaseUrl,
   ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
+  max: 1,
+  idleTimeoutMillis: 10000,
+  connectionTimeoutMillis: 5000,
+  allowExitOnIdle: true,
 });
 
 export const db = drizzle(pool, { schema });
