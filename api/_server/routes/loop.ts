@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { storage } from "../storage";
-import { api } from "../../_shared/routes";
+import { storage } from "../storage.js";
+import { api } from "../../_shared/routes.js";
 import { z } from "zod";
 import OpenAI from "openai";
-import { ESSENCE_WHITELIST, ESSENCE_ONTOLOGY } from "../../_shared/essences";
-import { DEFAULT_MI_METRICS, type MiMetrics, DEFAULT_ENCOUNTER_STATE, type EncounterState, type EncounterChoiceRecord } from "../../_shared/schema";
+import { ESSENCE_WHITELIST, ESSENCE_ONTOLOGY } from "../../_shared/essences.js";
+import { DEFAULT_MI_METRICS, type MiMetrics, DEFAULT_ENCOUNTER_STATE, type EncounterState, type EncounterChoiceRecord } from "../../_shared/schema.js";
 import {
     classifyResponse,
     detectChangeTalk,
@@ -12,12 +12,12 @@ import {
     generateCorrectiveContext,
     formatCorrectiveInstructions,
     countWords
-} from "../mi-tracker";
+} from "../mi-tracker.js";
 import {
     summarizeConversation,
     generateScene,
     composeArtifact
-} from "../encounter-generator";
+} from "../encounter-generator.js";
 
 const router = Router();
 

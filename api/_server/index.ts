@@ -1,10 +1,10 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import { handleDemo } from "./routes/demo";
-import { handleEarlyAccess } from "./routes/early-access";
-import { loopRouter } from "./routes/loop";
-import { initializeDatabase } from "./lib/database";
+import { handleDemo } from "./routes/demo.js";
+import { handleEarlyAccess } from "./routes/early-access.js";
+import { loopRouter } from "./routes/loop.js";
+import { initializeDatabase } from "./lib/database.js";
 
 export function createServer() {
   const app = express();

@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
 import { EarlyAccessRequest, EarlyAccessResponse } from "@shared/api";
-import { addEarlyAccessEmail } from "../lib/database";
+import { addEarlyAccessEmail } from "../lib/database.js";
 
 // Email validation
 function isValidEmail(email: string): boolean {

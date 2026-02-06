@@ -1,6 +1,6 @@
 import OpenAI from "openai";
-import { ESSENCE_ONTOLOGY, type EssenceArchetype } from "../_shared/essences";
-import type { EncounterState, EncounterScene, EncounterChoice, ArtifactDraft, GameMessage } from "../_shared/schema";
+import { ESSENCE_ONTOLOGY, type EssenceArchetype } from "../_shared/essences.js";
+import type { EncounterState, EncounterScene, EncounterChoice, ArtifactDraft, GameMessage } from "../_shared/schema.js";
 
 const openai = new OpenAI({
   apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
