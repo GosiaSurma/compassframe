@@ -29,16 +29,17 @@ export function createServer() {
     const start = Date.now();
     console.log(`[REQ] ${req.method} ${req.path}`);
 
-    res.setTimeout(10000, () => {
+    const timeout = setTimeout(() => {
       if (!res.headersSent) {
         console.warn(`[TIMEOUT] ${req.method} ${req.path}`);
         res.status(504).json({ message: "Request timed out" });
       }
-    });
+    }, 10000);
 
     res.on("finish", () => {
       const durationMs = Date.now() - start;
       console.log(`[RES] ${req.method} ${req.path} ${res.statusCode} ${durationMs}ms`);
+      clearTimeout(timeout);
     });
 
     next();
