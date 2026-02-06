@@ -6,6 +6,18 @@ import { handleEarlyAccess } from "./routes/early-access.js";
 import { loopRouter } from "./routes/loop.js";
 import { initializeDatabase } from "./lib/database.js";
 
+function shouldInitializeDatabase() {
+  const databaseUrl = process.env.DATABASE_URL;
+  if (!databaseUrl) return false;
+
+  if (process.env.NODE_ENV === "production" && /localhost|127\.0\.0\.1/i.test(databaseUrl)) {
+    console.warn("DATABASE_URL points to localhost in production. Skipping database init.");
+    return false;
+  }
+
+  return true;
+}
+
 export function createServer() {
   const app = express();
 
@@ -15,7 +27,7 @@ export function createServer() {
   app.use(express.urlencoded({ extended: true }));
 
   // Initialize database on startup
-  if (process.env.DATABASE_URL) {
+  if (shouldInitializeDatabase()) {
     initializeDatabase().catch((error) => {
       console.warn("Database initialization failed (running in Memory Mode):", error.message);
       // Don't exit, allow server to continue using MemStorage

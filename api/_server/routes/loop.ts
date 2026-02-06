@@ -21,9 +21,25 @@ import {
 
 const router = Router();
 
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY || process.env.AI_INTEGRATIONS_OPENAI_API_KEY;
+const OPENAI_TIMEOUT_MS = Number(process.env.OPENAI_TIMEOUT_MS || 8000);
+
 const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY || process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+    apiKey: OPENAI_API_KEY,
 });
+
+async function createChatCompletion(params: any) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), OPENAI_TIMEOUT_MS);
+    try {
+        return await openai.chat.completions.create({
+            ...params,
+            signal: controller.signal
+        });
+    } finally {
+        clearTimeout(timeout);
+    }
+}
 
 // Mock Auth Middleware for Demo
 const isAuthenticated = (req: any, res: any, next: any) => {
@@ -164,7 +180,11 @@ async function generateOpeningGreeting(shadowId: string): Promise<string> {
     const shadowLabel = SHADOW_LABELS[shadowId] || "this topic";
 
     try {
-        const completion = await openai.chat.completions.create({
+        if (!OPENAI_API_KEY) {
+            return `Let's explore ${shadowLabel} together. What's been your experience with this?`;
+        }
+
+        const completion = await createChatCompletion({
             model: "gpt-4o", // Changed to gpt-4o as gpt-5.1 is likely internal/not available
             messages: [
                 {
@@ -182,7 +202,7 @@ Output ONLY the greeting. No quotes.`
                 }
             ],
             max_completion_tokens: 150,
-            temperature: 0.95,
+            temperature: 0.95
         });
 
         const greeting = completion.choices[0].message.content?.trim();
@@ -278,6 +298,10 @@ router.put(api.sessions.update.path, isAuthenticated, async (req: any, res) => {
 // POST Turn
 router.post(api.sessions.turn.path, isAuthenticated, async (req: any, res) => {
     try {
+        if (!OPENAI_API_KEY) {
+            return res.status(503).json({ message: "OpenAI API key not configured" });
+        }
+
         const userId = req.user.claims.sub;
 
 
@@ -357,7 +381,7 @@ ${correctiveInstructions}
 USER MESSAGE:
 ${userText}`;
 
-        const completion = await openai.chat.completions.create({
+        const completion = await createChatCompletion({
             model: "gpt-4o",
             messages: [
                 { role: "system", content: CRYSTALIZE_SYSTEM_PROMPT },
@@ -365,7 +389,7 @@ ${userText}`;
                 { role: "user", content: contextPrompt }
             ],
             response_format: { type: "json_object" },
-            max_completion_tokens: 800,
+            max_completion_tokens: 800
         });
 
         const engineResponse = JSON.parse(completion.choices[0].message.content || "{}");
