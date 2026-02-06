@@ -28,32 +28,51 @@ type ChatMessage = {
 
 export default function Loop({ initialSession, embedded }: { initialSession?: any; embedded?: boolean } = {}) {
     const params = useParams<{ id: string }>();
-    const id = initialSession ? String(initialSession.id) : params.id;
+    const demoMode = params.id === "demo";
+    const demoSession = demoMode ? {
+        id: "demo",
+        role: "parent",
+        shadowId: "shadow_phone_use",
+        status: "active",
+        turn: 1,
+        cycle: 1,
+        accumulatedScores: {},
+        openingQuestion: "Let's explore a conflict pattern. What's a conversation with your teen that feels stuck?"
+    } : null;
+    const effectiveInitialSession = demoSession || initialSession;
+    const id = effectiveInitialSession ? String(effectiveInitialSession.id) : params.id;
     const navigate = useNavigate();
     const { toast } = useToast();
 
     const [messages, setMessages] = useState<ChatMessage[]>(
-        initialSession?.openingQuestion ? [{
+        effectiveInitialSession?.openingQuestion ? [{
             id: Date.now(),
             role: "assistant",
-            text: initialSession.openingQuestion,
+            text: effectiveInitialSession.openingQuestion,
             turn: 1
         }] : []
     );
     const [input, setInput] = useState("");
     const [currentTurn, setCurrentTurn] = useState<number>(1);
-    const [currentSession, setCurrentSession] = useState<any>(initialSession || null);
+    const [currentSession, setCurrentSession] = useState<any>(effectiveInitialSession || null);
     const [canCrystallize, setCanCrystallize] = useState(false);
     const [stabilityIndex, setStabilityIndex] = useState(0);
     const scrollRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
+    const [demoStep, setDemoStep] = useState(0);
+
+    const DEMO_RESPONSES = [
+        "It sounds like you’re stuck between wanting to guide them and wanting to keep the peace. Where does that tension show up most?",
+        "Part of you wants to protect them, and part of you worries that pushing too hard will backfire. What feels most important to hold onto?",
+        "You’re noticing how quickly the conversation escalates. What would a small, doable shift look like the next time it starts to heat up?"
+    ];
 
     const { data: sessionData, isLoading } = useQuery<{
         session: any;
         messages: any[];
     }>({
         queryKey: ['/api/sessions', id],
-        enabled: !initialSession && !!id
+        enabled: !demoMode && !initialSession && !!id
     });
 
     // Track when session data has been initialized to avoid re-processing
@@ -65,6 +84,7 @@ export default function Loop({ initialSession, embedded }: { initialSession?: an
     // Backend now filters messages by cycle, so we just load what the server returns
     // Sync from API if legacy mode
     useEffect(() => {
+        if (demoMode) return;
         if (!initialSession && sessionData?.session) {
             setCurrentSession(sessionData.session);
             const turn = sessionData.session.turn || 1;
@@ -104,6 +124,7 @@ export default function Loop({ initialSession, embedded }: { initialSession?: an
 
     // Auto-redirect to crystallization at turn 12 or when status is awaiting_crystallize
     useEffect(() => {
+        if (demoMode) return;
         const session = sessionData?.session;
         if (session) {
             const needsCrystallization = session.turn >= 12 && session.status === "active";
@@ -124,6 +145,7 @@ export default function Loop({ initialSession, embedded }: { initialSession?: an
 
     // Add initial greeting if no messages
     useEffect(() => {
+        if (demoMode) return;
         if (sessionData?.session && messages.length === 0 && !isLoading) {
             const shadow = sessionData.session.shadowId?.replace('shadow_', '').replace(/_/g, ' ') || 'this topic';
             const companionId = sessionData.session.companionId;
@@ -156,6 +178,20 @@ export default function Loop({ initialSession, embedded }: { initialSession?: an
 
     const turnMutation = useMutation({
         mutationFn: async (userText: string) => {
+            if (demoMode) {
+                const assistantText = DEMO_RESPONSES[demoStep] || "Thank you for sharing. What feels most alive in this for you right now?";
+                const nextTurn = currentTurn + 1;
+                setDemoStep(prev => prev + 1);
+                return {
+                    assistantText,
+                    chips: [],
+                    turn: currentTurn,
+                    nextTurn,
+                    canCrystallize: false,
+                    stabilityIndex: 0,
+                    updatedSession: { ...currentSession, turn: nextTurn }
+                };
+            }
             const payload: any = {
                 userText,
                 mode: 'reflect',
@@ -180,7 +216,9 @@ export default function Loop({ initialSession, embedded }: { initialSession?: an
             setCurrentTurn(response.nextTurn);
             setCanCrystallize(response.canCrystallize);
             setStabilityIndex(response.stabilityIndex);
-            queryClient.invalidateQueries({ queryKey: ['/api/sessions', id] });
+            if (!demoMode) {
+                queryClient.invalidateQueries({ queryKey: ['/api/sessions', id] });
+            }
         },
         onError: () => {
             toast({ title: "Error", description: "Something went wrong", variant: "destructive" });
@@ -216,7 +254,7 @@ export default function Loop({ initialSession, embedded }: { initialSession?: an
         return "Wrapping up";
     };
 
-    if (isLoading) {
+    if (!demoMode && isLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-background">
                 <div className="animate-pulse text-muted-foreground">Loading...</div>
