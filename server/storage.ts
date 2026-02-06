@@ -8,7 +8,7 @@ import {
     type Relay,
     type CreateSessionRequest,
     type CreateRelayRequest
-} from "../_shared/schema.js";
+} from "../shared/schema.js";
 import { eq, desc, and } from "drizzle-orm";
 
 export interface IStorage {

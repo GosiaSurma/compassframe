@@ -1,6 +1,6 @@
 import OpenAI from "openai";
-import type { MiMetrics } from "../_shared/schema.js";
-import { DEFAULT_MI_METRICS } from "../_shared/schema.js";
+import type { MiMetrics } from "../shared/schema.js";
+import { DEFAULT_MI_METRICS } from "../shared/schema.js";
 
 const openai = new OpenAI({
   apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
