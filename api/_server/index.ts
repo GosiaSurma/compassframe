@@ -52,7 +52,7 @@ export function createServer() {
       // Don't exit, allow server to continue using MemStorage
     });
   } else {
-    console.warn("Database disabled. Using memory storage.");
+    console.warn("DATABASE_URL not set. Database features will not work.");
   }
 
   // Example API routes

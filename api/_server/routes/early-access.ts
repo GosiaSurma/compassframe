@@ -29,9 +29,9 @@ export const handleEarlyAccess: RequestHandler<
 
   try {
     if (!isDatabaseEnabled()) {
-      return res.status(200).json({
-        success: true,
-        message: "Email captured (demo mode, not stored)",
+      return res.status(503).json({
+        success: false,
+        message: "Database is not configured",
       });
     }
 

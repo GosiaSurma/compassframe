@@ -3,7 +3,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import * as schema from "../../_shared/schema.js";
 
 const databaseUrl = process.env.DATABASE_URL;
-const databaseEnabled = process.env.ENABLE_DATABASE === "true" && !!databaseUrl;
+const databaseEnabled = !!databaseUrl;
 
 export function isDatabaseEnabled() {
   return databaseEnabled;
