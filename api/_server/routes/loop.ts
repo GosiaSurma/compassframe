@@ -33,11 +33,11 @@ const openai = new OpenAI({
 
 async function createChatCompletion(params: any, timeoutMs: number) {
     const controller = new AbortController();
+    let timer: ReturnType<typeof setTimeout> | undefined;
     try {
         const timeoutPromise = new Promise<never>((_, reject) => {
-            const timer = setTimeout(() => {
+            timer = setTimeout(() => {
                 controller.abort();
-                clearTimeout(timer);
                 reject(new Error("timeout"));
             }, timeoutMs);
         });
@@ -49,6 +49,9 @@ async function createChatCompletion(params: any, timeoutMs: number) {
 
         return await Promise.race([requestPromise, timeoutPromise]);
     } finally {
+        if (timer) {
+            clearTimeout(timer);
+        }
     }
 }
 
