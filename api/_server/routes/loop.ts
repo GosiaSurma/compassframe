@@ -23,6 +23,17 @@ const router = Router();
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY || process.env.AI_INTEGRATIONS_OPENAI_API_KEY;
 const OPENAI_TIMEOUT_MS = Number(process.env.OPENAI_TIMEOUT_MS || 8000);
+const OPENING_GREETING_TIMEOUT_MS = Number(process.env.OPENING_GREETING_TIMEOUT_MS || 2000);
+
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
+        const timer = setTimeout(() => reject(new Error("timeout")), ms);
+        promise
+            .then(resolve)
+            .catch(reject)
+            .finally(() => clearTimeout(timer));
+    });
+}
 
 const openai = new OpenAI({
     apiKey: OPENAI_API_KEY,
@@ -184,12 +195,13 @@ async function generateOpeningGreeting(shadowId: string): Promise<string> {
             return `Let's explore ${shadowLabel} together. What's been your experience with this?`;
         }
 
-        const completion = await createChatCompletion({
-            model: "gpt-4o", // Changed to gpt-4o as gpt-5.1 is likely internal/not available
-            messages: [
-                {
-                    role: "system",
-                    content: `You are an MI specialist. Generate a brief opening (1-2 short sentences max) for a parent reflection on "${shadowLabel}".
+        const completion = await withTimeout(
+            createChatCompletion({
+                model: "gpt-4o", // Changed to gpt-4o as gpt-5.1 is likely internal/not available
+                messages: [
+                    {
+                        role: "system",
+                        content: `You are an MI specialist. Generate a brief opening (1-2 short sentences max) for a parent reflection on "${shadowLabel}".
 
 Rules:
 - End with ONE open question (What/How/Tell me)
@@ -199,11 +211,13 @@ Rules:
 - Be fresh and varied each time
 
 Output ONLY the greeting. No quotes.`
-                }
-            ],
-            max_completion_tokens: 150,
-            temperature: 0.95
-        });
+                    }
+                ],
+                max_completion_tokens: 150,
+                temperature: 0.95
+            }),
+            OPENING_GREETING_TIMEOUT_MS
+        );
 
         const greeting = completion.choices[0].message.content?.trim();
 
