@@ -1,40 +1,10 @@
 import { Pool, PoolClient } from "pg";
-import { drizzle } from "drizzle-orm/node-postgres";
-import * as schema from "../../shared/schema.js";
-
-const databaseUrl = process.env.DATABASE_URL;
-const databaseEnabled = !!databaseUrl;
-
-export function isDatabaseEnabled() {
-  return databaseEnabled;
-}
-
-let initPromise: Promise<void> | null = null;
-
-export async function ensureDatabaseReady() {
-  if (!databaseEnabled) {
-    throw new Error("Database is not configured");
-  }
-  if (!initPromise) {
-    initPromise = initializeDatabase().catch((error) => {
-      initPromise = null;
-      throw error;
-    });
-  }
-  return initPromise;
-}
 
 // Create a connection pool
 const pool = new Pool({
-  connectionString: databaseUrl,
+  connectionString: process.env.DATABASE_URL,
   ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
-  max: 1,
-  idleTimeoutMillis: 10000,
-  connectionTimeoutMillis: 10000,
-  allowExitOnIdle: true,
 });
-
-export const db = drizzle(pool, { schema });
 
 // Handle connection errors
 pool.on("error", (err) => {
