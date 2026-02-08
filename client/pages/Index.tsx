@@ -268,13 +268,12 @@ export default function Index() {
             </div>
 
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold leading-tight tracking-tight mb-8">
-              <span className="block">When conflict</span>
-              <span className="block">stops being</span>
+              <span className="block">When you understand</span>
               <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                personal,
+                their world.
               </span>
-              <span className="block">everything</span>
-              <span className="block">changes.</span>
+              <span className="block">A new form of connection</span>
+              <span className="block">becomes possible.</span>
             </h1>
 
             <p className="text-lg sm:text-xl text-slate-600 font-light mb-10 max-w-xl">
@@ -341,7 +340,7 @@ export default function Index() {
           <p className="text-center text-slate-600 text-lg mb-16 max-w-2xl mx-auto">
             Choose your scenario and watch how understanding transforms response.
           </p>
-
+          <iframe src="https://motivationalapp.replit.app/" width="100%" height="600px" />
           {/* Demo Panel */}
           <div className="bg-white rounded-3xl p-8 sm:p-12 min-h-[700px] flex flex-col justify-between border-2 border-slate-200 shadow-2xl">
             {/* Progress bar */}
@@ -531,19 +530,19 @@ export default function Index() {
               <div className="p-8 bg-slate-100 rounded-2xl border-2 border-slate-300 space-y-6">
                 <div>
                   <p className="text-sm font-bold text-slate-600 uppercase mb-2">Media</p>
-                  <p className="text-slate-700">TV, Movies, News</p>
+                  <p className="text-slate-700">Longer-form content, slower cycles, fewer abrupt shifts in context.</p>
                 </div>
                 <div>
                   <p className="text-sm font-bold text-slate-600 uppercase mb-2">Communication</p>
-                  <p className="text-slate-700">Phone calls, Email, Texts</p>
+                  <p className="text-slate-700">Messages aim to stand alone, intent is stated explicitly.</p>
                 </div>
                 <div>
                   <p className="text-sm font-bold text-slate-600 uppercase mb-2">Thinking</p>
-                  <p className="text-slate-700">Linear, Step-by-step, Planned</p>
+                  <p className="text-slate-700">Preference for a single thread, explanation, and closure.</p>
                 </div>
                 <div>
                   <p className="text-sm font-bold text-slate-600 uppercase mb-2">Community</p>
-                  <p className="text-slate-700">Local, In-person, Defined</p>
+                  <p className="text-slate-700">Fewer overlapping circles in daily life, lower audience mixing.</p>
                 </div>
               </div>
             </div>
@@ -554,19 +553,19 @@ export default function Index() {
               <div className="p-8 bg-gradient-to-br from-purple-50 to-blue-50 rounded-2xl border-2 border-purple-300 space-y-6">
                 <div>
                   <p className="text-sm font-bold text-purple-600 uppercase mb-2">Media</p>
-                  <p className="text-slate-700">TikTok, YouTube, Streaming, Discord</p>
+                  <p className="text-slate-700">Stream-first content, fast remixing, constant context switching.</p>
                 </div>
                 <div>
                   <p className="text-sm font-bold text-purple-600 uppercase mb-2">Communication</p>
-                  <p className="text-slate-700">Memes, Stories, Bereal, Finsta</p>
+                  <p className="text-slate-700">Messages rely on references, subtext, and who is watching.</p>
                 </div>
                 <div>
                   <p className="text-sm font-bold text-purple-600 uppercase mb-2">Thinking</p>
-                  <p className="text-slate-700">Non-linear, Multi-threaded, In-the-moment</p>
+                  <p className="text-slate-700">Comfort with parallel threads, fast social inference, delayed closure.</p>
                 </div>
                 <div>
                   <p className="text-sm font-bold text-purple-600 uppercase mb-2">Community</p>
-                  <p className="text-slate-700">Global, Online, Fluid, Constantly evolving</p>
+                  <p className="text-slate-700">Overlapping circles, higher audience mixing, moments travel across groups.</p>
                 </div>
               </div>
             </div>
@@ -583,7 +582,7 @@ export default function Index() {
               <div className="text-center p-6 bg-gradient-to-r from-blue-400 to-purple-400 rounded-xl transform scale-110">
                 <p className="text-3xl mb-2 text-white">🌉</p>
                 <p className="font-bold text-white">Step in &</p>
-                <p className="font-bold text-white">listen</p>
+                <p className="font-bold text-white">play</p>
               </div>
               <div className="text-center p-6 bg-gradient-to-br from-purple-100 to-blue-100 rounded-xl">
                 <p className="text-3xl mb-2">👧</p>
@@ -594,11 +593,14 @@ export default function Index() {
 
           <div className="mt-12 p-8 bg-blue-50 rounded-2xl border-2 border-blue-300 text-center">
             <p className="text-lg text-slate-700">
-              <span className="font-bold text-blue-700">You don't need to understand them.</span> You just need to understand them. The bridge isn't about abandoning who you are-it's about making space for who they're becoming.
+              <span className="font-bold text-blue-700">You don't need to understand everything.</span>
+              You just need to experiment the rules of their world through play. The bridge isn't about abandoning who you are - it's about sharing a safe space for change and growth.
             </p>
           </div>
         </div>
       </section>
+
+
 
       {/* How It Works Section */}
       <section id="how-it-works" className="py-20 lg:py-32 px-4 sm:px-6 lg:px-8 bg-white">
@@ -670,9 +672,9 @@ export default function Index() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
-              { title: "Adolescent psychiatry", desc: "Deep understanding of how teens develop and what they actually need." },
-              { title: "Family systems", desc: "Clinical expertise in how connection works and what breaks it." },
-              { title: "Product engineering", desc: "Built to work in real moments with real families. Not research. Product." },
+              { title: "Pablo Guzmán", desc: "Psychiatrist with direct experience in communication frameworks like motivational interviewing." },
+              { title: "Ramón Opazo", desc: "Brings technical execution and rapid prototyping to turn these insights into a usable product." },
+              { title: "Malgorzata Surma", desc: "Brings product and systems design experience and has repeatedly observed the same parent–teen breakdown in real families and communities." },
             ].map((role) => (
               <div key={role.title} className="p-8 bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl border-2 border-slate-200 text-center hover:shadow-lg transition-all">
                 <h3 className="text-xl font-bold mb-3">{role.title}</h3>
