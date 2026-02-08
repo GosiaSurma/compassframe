@@ -1,6 +1,18 @@
 import { RequestHandler } from "express";
 import { EarlyAccessRequest, EarlyAccessResponse } from "@shared/api";
-import { addEarlyAccessEmail } from "../lib/database";
+import { addEarlyAccessEmail, ensureDatabaseReady, isDatabaseEnabled } from "../lib/database.js";
+
+const DATABASE_TIMEOUT_MS = Number(process.env.DATABASE_TIMEOUT_MS || 4000);
+
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error("database timeout")), ms);
+    promise
+      .then(resolve)
+      .catch(reject)
+      .finally(() => clearTimeout(timer));
+  });
+}
 
 // Email validation
 function isValidEmail(email: string): boolean {
@@ -16,6 +28,13 @@ export const handleEarlyAccess: RequestHandler<
   const { email } = req.body;
 
   try {
+    if (!isDatabaseEnabled()) {
+      return res.status(503).json({
+        success: false,
+        message: "Database is not configured",
+      });
+    }
+
     // Validate email exists
     if (!email || typeof email !== "string") {
       return res.status(400).json({
@@ -32,8 +51,14 @@ export const handleEarlyAccess: RequestHandler<
       });
     }
 
+    // Ensure schema is ready, then save
+    await withTimeout(ensureDatabaseReady(), DATABASE_TIMEOUT_MS);
+
     // Save email to PostgreSQL database
-    const saved = await addEarlyAccessEmail(email.trim().toLowerCase());
+    const saved = await withTimeout(
+      addEarlyAccessEmail(email.trim().toLowerCase()),
+      DATABASE_TIMEOUT_MS
+    );
 
     if (saved) {
       res.status(201).json({

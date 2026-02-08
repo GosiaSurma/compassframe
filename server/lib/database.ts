@@ -64,61 +64,6 @@ export async function initializeDatabase() {
       ON early_access_emails(email)
     `);
 
-    // Create game_sessions table
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS game_sessions (
-        id SERIAL PRIMARY KEY,
-        user_id VARCHAR(255) NOT NULL,
-        role TEXT NOT NULL,
-        shadow_id TEXT,
-        shadow_custom TEXT,
-        companion_id TEXT,
-        artifact_type TEXT,
-        status TEXT NOT NULL DEFAULT 'active',
-        turn INTEGER NOT NULL DEFAULT 1,
-        cycle INTEGER NOT NULL DEFAULT 1,
-        accumulated_scores JSONB,
-        mi_metrics JSONB,
-        encounter_state JSONB,
-        artifact_draft JSONB,
-        spell JSONB,
-        opening_question TEXT,
-        crystallized_essence_id TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      )
-    `);
-
-    // Create game_messages table
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS game_messages (
-        id SERIAL PRIMARY KEY,
-        session_id INTEGER NOT NULL REFERENCES game_sessions(id),
-        cycle INTEGER NOT NULL DEFAULT 1,
-        turn INTEGER NOT NULL,
-        mode TEXT NOT NULL,
-        user_text TEXT,
-        assistant_text TEXT,
-        highlights JSONB,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      )
-    `);
-
-    // Create relays table
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS relays (
-        id SERIAL PRIMARY KEY,
-        from_user_id VARCHAR(255) NOT NULL,
-        to_user_id VARCHAR(255),
-        from_role TEXT NOT NULL,
-        type TEXT NOT NULL,
-        text TEXT NOT NULL,
-        shadow_id TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        read_at TIMESTAMP
-      )
-    `);
-
     console.log("Database schema initialized successfully");
   } catch (error) {
     console.error("Failed to initialize database schema:", error);
