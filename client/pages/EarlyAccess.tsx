@@ -20,21 +20,31 @@ export default function EarlyAccess() {
 
     setIsSubmitting(true);
     try {
-      // TODO: Replace with your actual API endpoint
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 8000);
       const response = await fetch("/api/early-access", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
+        signal: controller.signal,
       });
+      clearTimeout(timeout);
 
-      if (!response.ok) throw new Error("Failed to submit");
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || "Failed to submit");
+      }
 
       setSubmitStatus("success");
       setEmail("");
       setTimeout(() => navigate("/"), 2000);
     } catch (error) {
       setSubmitStatus("error");
-      setErrorMessage("Something went wrong. Please try again.");
+      setErrorMessage(
+        (error as Error).name === "AbortError"
+          ? "Request timed out. Please try again."
+          : "Something went wrong. Please try again."
+      );
     } finally {
       setIsSubmitting(false);
     }
