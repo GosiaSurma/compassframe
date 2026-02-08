@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
 import { EarlyAccessRequest, EarlyAccessResponse } from "@shared/api";
-import { addEarlyAccessEmail, isDatabaseEnabled } from "../lib/database.js";
+import { addEarlyAccessEmail, ensureDatabaseReady, isDatabaseEnabled } from "../lib/database.js";
 
 const DATABASE_TIMEOUT_MS = Number(process.env.DATABASE_TIMEOUT_MS || 4000);
 
@@ -52,6 +52,9 @@ export const handleEarlyAccess: RequestHandler<
         message: "Invalid email format",
       });
     }
+
+    // Ensure schema is ready, then save
+    await withTimeout(ensureDatabaseReady(), DATABASE_TIMEOUT_MS);
 
     // Save email to PostgreSQL database
     const saved = await withTimeout(

@@ -9,13 +9,28 @@ export function isDatabaseEnabled() {
   return databaseEnabled;
 }
 
+let initPromise: Promise<void> | null = null;
+
+export async function ensureDatabaseReady() {
+  if (!databaseEnabled) {
+    throw new Error("Database is not configured");
+  }
+  if (!initPromise) {
+    initPromise = initializeDatabase().catch((error) => {
+      initPromise = null;
+      throw error;
+    });
+  }
+  return initPromise;
+}
+
 // Create a connection pool
 const pool = new Pool({
   connectionString: databaseUrl,
   ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
   max: 1,
   idleTimeoutMillis: 10000,
-  connectionTimeoutMillis: 5000,
+  connectionTimeoutMillis: 10000,
   allowExitOnIdle: true,
 });
 

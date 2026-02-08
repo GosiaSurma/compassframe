@@ -45,13 +45,13 @@ export function createServer() {
     next();
   });
 
-  // Initialize database on startup
-  if (shouldInitializeDatabase()) {
+  // Initialize database on startup only when explicitly enabled
+  if (process.env.INIT_DATABASE_ON_STARTUP === "true" && shouldInitializeDatabase()) {
     initializeDatabase().catch((error) => {
       console.warn("Database initialization failed (running in Memory Mode):", error.message);
       // Don't exit, allow server to continue using MemStorage
     });
-  } else {
+  } else if (!isDatabaseEnabled()) {
     console.warn("DATABASE_URL not set. Database features will not work.");
   }
 
