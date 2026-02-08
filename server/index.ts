@@ -1,9 +1,22 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import { handleDemo } from "./routes/demo.ts";
-import { handleEarlyAccess } from "./routes/early-access.ts";
-import { initializeDatabase } from "./lib/database.ts";
+import { handleDemo } from "./routes/demo.js";
+import { handleEarlyAccess } from "./routes/early-access.js";
+import { loopRouter } from "./routes/loop.js";
+import { initializeDatabase, isDatabaseEnabled } from "./lib/database.js";
+
+function shouldInitializeDatabase() {
+  const databaseUrl = process.env.DATABASE_URL;
+  if (!isDatabaseEnabled()) return false;
+
+  if (process.env.NODE_ENV === "production" && /localhost|127\.0\.0\.1/i.test(databaseUrl)) {
+    console.warn("DATABASE_URL points to localhost in production. Skipping database init.");
+    return false;
+  }
+
+  return true;
+}
 
 export function createServer() {
   const app = express();
@@ -12,14 +25,33 @@ export function createServer() {
   app.use(cors());
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
+  app.use((req, res, next) => {
+    const start = Date.now();
+    console.log(`[REQ] ${req.method} ${req.path}`);
 
-  // Initialize database on startup
-  if (process.env.DATABASE_URL) {
-    initializeDatabase().catch((error) => {
-      console.error("Failed to initialize database:", error);
-      // Don't exit, allow server to continue but warn about database issues
+    const timeout = setTimeout(() => {
+      if (!res.headersSent) {
+        console.warn(`[TIMEOUT] ${req.method} ${req.path}`);
+        res.status(504).json({ message: "Request timed out" });
+      }
+    }, 10000);
+
+    res.on("finish", () => {
+      const durationMs = Date.now() - start;
+      console.log(`[RES] ${req.method} ${req.path} ${res.statusCode} ${durationMs}ms`);
+      clearTimeout(timeout);
     });
-  } else {
+
+    next();
+  });
+
+  // Initialize database on startup only when explicitly enabled
+  if (process.env.INIT_DATABASE_ON_STARTUP === "true" && shouldInitializeDatabase()) {
+    initializeDatabase().catch((error) => {
+      console.warn("Database initialization failed (running in Memory Mode):", error.message);
+      // Don't exit, allow server to continue using MemStorage
+    });
+  } else if (!isDatabaseEnabled()) {
     console.warn("DATABASE_URL not set. Database features will not work.");
   }
 
@@ -30,6 +62,7 @@ export function createServer() {
   });
 
   app.get("/api/demo", handleDemo);
+  app.use(loopRouter);
 
   // Early access email signup
   app.post("/api/early-access", handleEarlyAccess);
