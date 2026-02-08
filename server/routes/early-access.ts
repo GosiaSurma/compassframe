@@ -25,10 +25,12 @@ export const handleEarlyAccess: RequestHandler<
   EarlyAccessResponse,
   EarlyAccessRequest
 > = async (req, res) => {
+  console.log("[EarlyAccess] Request received");
   const { email } = req.body;
 
   try {
     if (!isDatabaseEnabled()) {
+      console.warn("[EarlyAccess] Database not configured");
       return res.status(503).json({
         success: false,
         message: "Database is not configured",
@@ -58,18 +60,20 @@ export const handleEarlyAccess: RequestHandler<
     );
 
     if (saved) {
+      console.log("[EarlyAccess] Email stored");
       res.status(201).json({
         success: true,
         message: "Email added to early access list",
       });
     } else {
+      console.log("[EarlyAccess] Email already exists");
       res.status(200).json({
         success: true,
         message: "Email already registered",
       });
     }
   } catch (error) {
-    console.error("Error in early access handler:", error);
+    console.error("[EarlyAccess] Error storing email:", error);
     res.status(500).json({
       success: false,
       message: "Something went wrong. Please try again.",
