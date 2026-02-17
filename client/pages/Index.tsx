@@ -340,7 +340,7 @@ export default function Index() {
           <p className="text-center text-slate-600 text-lg mb-16 max-w-2xl mx-auto">
             Choose your scenario and watch how understanding transforms response.
           </p>
-          <iframe src="https://motivationalapp.replit.app/" width="100%" height="600px" />
+          {/* <iframe src="https://motivationalapp.replit.app/" width="100%" height="600px" />*/}
           {/* Demo Panel */}
           <div className="bg-white rounded-3xl p-8 sm:p-12 min-h-[700px] flex flex-col justify-between border-2 border-slate-200 shadow-2xl">
             {/* Progress bar */}
